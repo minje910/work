@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고1 1학기 기말고사 학습 계획 · D-day Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f1e8;
+    --bg-2: #ebe5d4;
+    --paper: #fdfbf5;
+    --ink: #1a1a1a;
+    --ink-soft: #444;
+    --ink-mute: #888;
+    --accent: #c8442a;
+    --accent-soft: #e87d63;
+    --accent-warm: #d9a441;
+    --line: #2a2a2a;
+    --line-soft: #c9c2b0;
+    --done: #6b8e4e;
+    --done-soft: #d4e0c2;
+    --shadow: 4px 4px 0 var(--line);
+    --shadow-sm: 2px 2px 0 var(--line);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans KR', -apple-system, sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.06) 1px, transparent 0);
+    background-size: 20px 20px;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 24px 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ===== Header ===== */
+  header {
+    background: var(--paper);
+    border: 2.5px solid var(--line);
+    box-shadow: var(--shadow);
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 8px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--accent) 0,
+      var(--accent) 20px,
+      var(--ink) 20px,
+      var(--ink) 24px,
+      var(--accent-warm) 24px,
+      var(--accent-warm) 44px,
+      var(--ink) 44px,
+      var(--ink) 48px
+    );
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 12px;
+  }
+
+  .title-block .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-family: 'Gowun Batang', serif;
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  h1 .accent { color: var(--accent); }
+
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .dday-block {
+    text-align: right;
+    border-left: 2.5px solid var(--line);
+    padding-left: 20px;
+    min-width: 180px;
+  }
+
+  .dday-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--ink-mute);
+  }
+
+  .dday-number {
+    font-family: 'Gowun Batang', serif;
+    font-weight: 700;
+    font-size: 56px;
+    line-height: 1;
+    color: var(--accent);
+    margin-top: 2px;
+  }
+
+  .dday-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  /* ===== Dashboard ===== */
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 760px) {
+    .dashboard { grid-template-columns: 1fr; }
+    .header-top { flex-direction: column; align-items: flex-start; }
+    .dday-block { border-left: 0; border-top: 2.5px solid var(--line); padding-left: 0; padding-top: 14px; text-align: left; width: 100%; }
+  }
+
+  .card {
+    background: var(--paper);
+    border: 2.5px solid var(--line);
+    box-shadow: var(--shadow);
+    padding: 22px 24px;
+  }
+
+  .card-title {
+    font-family: 'Gowun Batang', serif;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-title::before {
+    content: "";
+    width: 14px;
+    height: 14px;
+    background: var(--accent);
+    border: 2px solid var(--line);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+
+  /* Progress */
+  .progress-overall {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .progress-percent {
+    font-family: 'Gowun Batang', serif;
+    font-size: 44px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .progress-fraction {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink-mute);
+  }
+
+  .progress-bar {
+    height: 16px;
+    background: var(--bg-2);
+    border: 2px solid var(--line);
+    margin: 12px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 6px,
+      rgba(0,0,0,0.04) 6px,
+      rgba(0,0,0,0.04) 12px
+    );
+    pointer-events: none;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 4px,
+      rgba(255,255,255,0.2) 4px,
+      rgba(255,255,255,0.2) 8px
+    );
+  }
+
+  /* Phase indicator */
+  .phases {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .phase {
+    text-align: center;
+    padding: 10px 6px;
+    border: 2px solid var(--line);
+    background: var(--bg-2);
+    font-size: 11px;
+    transition: all 0.2s;
+  }
+
+  .phase.active {
+    background: var(--accent);
+    color: var(--paper);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .phase-num {
+    font-family: 'Gowun Batang', serif;
+    font-size: 16px;
+    font-weight: 700;
+    display: block;
+  }
+
+  .phase-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  /* Subject progress mini */
+  .subject-mini-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .subject-mini {
+    display: grid;
+    grid-template-columns: 90px 1fr 40px;
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+  }
+
+  .subject-mini .name {
+    font-weight: 500;
+  }
+
+  .subject-mini .bar {
+    height: 8px;
+    background: var(--bg-2);
+    border: 1.5px solid var(--line);
+    overflow: hidden;
+  }
+
+  .subject-mini .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.4s ease;
+  }
+
+  .subject-mini .pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-align: right;
+  }
+
+  /* ===== Section ===== */
+  .section {
+    margin-bottom: 32px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .section-header h2 {
+    font-family: 'Gowun Batang', serif;
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: -0.01em;
+  }
+
+  .section-header .line {
+    flex: 1;
+    height: 2.5px;
+    background: var(--line);
+  }
+
+  .section-header .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 4px 10px;
+    letter-spacing: 0.1em;
+  }
+
+  /* Subject cards */
+  .subjects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 18px;
+  }
+
+  .subject-card {
+    background: var(--paper);
+    border: 2.5px solid var(--line);
+    box-shadow: var(--shadow);
+    padding: 20px 22px;
+    transition: transform 0.15s ease;
+  }
+
+  .subject-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--line);
+  }
+
+  .subject-card.major {
+    background: var(--paper);
+  }
+
+  .subject-card.minor {
+    background: #faf5e8;
+  }
+
+  .subject-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+    border-bottom: 1.5px dashed var(--line-soft);
+  }
+
+  .subject-name {
+    font-family: 'Gowun Batang', serif;
+    font-weight: 700;
+    font-size: 20px;
+  }
+
+  .subject-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 3px 8px;
+    letter-spacing: 0.1em;
+    align-self: center;
+  }
+
+  .subject-tag.minor-tag {
+    background: var(--accent-warm);
+  }
+
+  .subject-scope {
+    font-size: 12px;
+    color: var(--ink-mute);
+    margin-bottom: 14px;
+    padding: 8px 10px;
+    background: var(--bg-2);
+    border-left: 3px solid var(--accent);
+  }
+
+  .subject-hours {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+
+  /* Checkbox items */
+  .check-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .check-item:hover {
+    background: var(--bg-2);
+  }
+
+  .check-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--line);
+    background: var(--paper);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    transition: all 0.15s;
+  }
+
+  .check-item input[type="checkbox"]:checked {
+    background: var(--done);
+    border-color: var(--line);
+  }
+
+  .check-item input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    color: var(--paper);
+    font-weight: 700;
+    font-size: 14px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+  }
+
+  .check-item .label {
+    font-size: 13px;
+    line-height: 1.5;
+    transition: all 0.2s;
+  }
+
+  .check-item input[type="checkbox"]:checked + .label {
+    color: var(--ink-mute);
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+  }
+
+  .check-item .round {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: var(--bg-2);
+    border: 1px solid var(--line-soft);
+    padding: 1px 6px;
+    margin-right: 6px;
+    color: var(--ink-soft);
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  .check-item .round.r1 { background: #ffe5d4; }
+  .check-item .round.r2 { background: #e0d4ff; }
+  .check-item .round.r3 { background: var(--done-soft); }
+
+  /* Weekly schedule */
+  .weeks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .week-card {
+    background: var(--paper);
+    border: 2.5px solid var(--line);
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+    position: relative;
+  }
+
+  .week-card.current {
+    background: #fff8e8;
+    border-color: var(--accent);
+  }
+
+  .week-card.current::before {
+    content: "NOW";
+    position: absolute;
+    top: -10px;
+    right: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: var(--accent);
+    color: var(--paper);
+    padding: 3px 8px;
+    letter-spacing: 0.15em;
+  }
+
+  .week-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+
+  .week-num {
+    font-family: 'Gowun Batang', serif;
+    font-weight: 700;
+    font-size: 22px;
+  }
+
+  .week-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-mute);
+  }
+
+  .week-goal {
+    font-size: 12px;
+    color: var(--ink-soft);
+    padding: 6px 10px;
+    background: var(--bg-2);
+    margin: 8px 0 12px;
+    border-left: 3px solid var(--accent);
+  }
+
+  /* Strategy section */
+  .strategy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .strategy-card {
+    background: var(--paper);
+    border: 2.5px solid var(--line);
+    box-shadow: var(--shadow);
+    padding: 20px 22px;
+    position: relative;
+  }
+
+  .strategy-num {
+    font-family: 'Gowun Batang', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .strategy-title {
+    font-family: 'Gowun Batang', serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 8px 0 6px;
+  }
+
+  .strategy-desc {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+
+  /* Footer / Actions */
+  .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2.5px solid var(--line);
+  }
+
+  .btn {
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px solid var(--line);
+    padding: 8px 16px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.1s ease;
+  }
+
+  .btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--line);
+  }
+
+  .btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--line);
+  }
+
+  .btn-danger {
+    background: var(--accent);
+    color: var(--paper);
+  }
+
+  .save-indicator {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--done);
+    align-self: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .save-indicator.show {
+    opacity: 1;
+  }
+
+  /* Footer text */
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    font-family: 'Gowun Batang', serif;
+    font-size: 14px;
+    color: var(--ink-mute);
+    border-top: 1.5px dashed var(--line-soft);
+  }
+
+  footer .quote {
+    font-style: italic;
+  }
+
+  /* Animations */
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  .check-item input[type="checkbox"]:checked {
+    animation: pop 0.25s ease;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div class="header-top">
+      <div class="title-block">
+        <div class="eyebrow">High School 1st · Final Exam Tracker</div>
+        <h1>고1 1학기 <span class="accent">기말고사</span> 작전</h1>
+        <p class="subtitle">최소 2회독 이상 · 6주 학습 플랜</p>
+      </div>
+      <div class="dday-block">
+        <div class="dday-label">D-DAY</div>
+        <div class="dday-number" id="dday">-</div>
+        <div class="dday-date">2026.06.30 (화)</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="dashboard">
+    <div class="card">
+      <div class="card-title">전체 진행률</div>
+      <div class="progress-overall">
+        <div class="progress-percent" id="overallPercent">0%</div>
+        <div class="progress-fraction" id="overallFraction">0 / 0</div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="overallFill" style="width: 0%"></div>
+      </div>
+      <div class="phases">
+        <div class="phase" id="phase1">
+          <span class="phase-num">1회독</span>
+          <span class="phase-label">5/17 ~ 6/6</span>
+        </div>
+        <div class="phase" id="phase2">
+          <span class="phase-num">2회독</span>
+          <span class="phase-label">6/7 ~ 6/20</span>
+        </div>
+        <div class="phase" id="phase3">
+          <span class="phase-num">3회독</span>
+          <span class="phase-label">6/21 ~ 6/29</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">과목별 진행률</div>
+      <div class="subject-mini-list" id="subjectMiniList"></div>
+    </div>
+  </div>
+
+  <!-- ===== SUBJECTS ===== -->
+  <section class="section">
+    <div class="section-header">
+      <h2>과목별 체크리스트</h2>
+      <div class="line"></div>
+      <div class="badge">8 SUBJECTS</div>
+    </div>
+    <div class="subjects-grid" id="subjectsGrid"></div>
+  </section>
+
+  <!-- ===== WEEKLY ===== -->
+  <section class="section">
+    <div class="section-header">
+      <h2>주차별 마일스톤</h2>
+      <div class="line"></div>
+      <div class="badge">6 WEEKS</div>
+    </div>
+    <div class="weeks-grid" id="weeksGrid"></div>
+  </section>
+
+  <!-- ===== STRATEGY ===== -->
+  <section class="section">
+    <div class="section-header">
+      <h2>회독 전략</h2>
+      <div class="line"></div>
+      <div class="badge">STUDY METHOD</div>
+    </div>
+    <div class="strategy-grid">
+      <div class="strategy-card">
+        <div class="strategy-num">01</div>
+        <div class="strategy-title">1회독 · 이해</div>
+        <p class="strategy-desc">문제부터 풀지 말고 교과서·수업필기 정독. 개념을 자기 말로 설명할 수 있을 때까지.</p>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-num">02</div>
+        <div class="strategy-title">2회독 · 유형</div>
+        <p class="strategy-desc">유형별 문제·기출 풀이. 자주 틀리는 유형 표시. <strong>오답노트는 이때부터</strong> 작성.</p>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-num">03</div>
+        <div class="strategy-title">3회독 · 약점</div>
+        <p class="strategy-desc">오답노트와 단권화 자료만 회독. 전체를 다시 보지 않기. 시험 직전 빠르게 훑을 자료 완성.</p>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-num">+</div>
+        <div class="strategy-title">매일 습관</div>
+        <p class="strategy-desc">암기과목·영단어는 매일 30분 분산학습이 통회독보다 효과적. 수학은 매일 1~2시간 빠짐없이.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ACTIONS ===== -->
+  <div class="actions">
+    <span class="save-indicator" id="saveIndicator">✓ 자동 저장됨</span>
+    <button class="btn" onclick="exportData()">데이터 내보내기</button>
+    <button class="btn btn-danger" onclick="resetAll()">전체 초기화</button>
+  </div>
+
+  <footer>
+    <p class="quote">"매일 한 페이지씩 쌓이면, 시험날엔 한 권이 된다."</p>
+    <p style="margin-top: 6px; font-size: 11px; font-family: 'JetBrains Mono', monospace;">데이터는 브라우저에 자동 저장됩니다 · localStorage</p>
+  </footer>
+
+</div>
+
+<script>
+  // ===== DATA =====
+  const EXAM_DATE = new Date('2026-06-30T00:00:00');
+
+  const subjects = [
+    {
+      id: 'korean', name: '국어', tag: '주요', type: 'major',
+      scope: '교과서 2~3개 대단원 (문학+독서/문법 지문 4~6편) + 부교재 학습지',
+      hours: '주 6~8시간',
+      tasks: [
+        { round: 1, text: '교과서 본문 정독 (대단원 전체)' },
+        { round: 1, text: '수업 필기·강조 표시 정리' },
+        { round: 1, text: '문학작품 주제·표현 정리' },
+        { round: 1, text: '문법 개념 노트 작성' },
+        { round: 2, text: '부교재 학습지 1차 풀이' },
+        { round: 2, text: '기출·변형 문제 풀이' },
+        { round: 2, text: '오답 정리 + 모르는 어휘 암기' },
+        { round: 3, text: '핵심 지문 빠르게 재독' },
+        { round: 3, text: '오답노트 최종 점검' },
+      ]
+    },
+    {
+      id: 'english', name: '영어', tag: '주요', type: 'major',
+      scope: '본문 Lesson 2~3개 + 부교재(모의고사·구문집) + 단어 400~600개',
+      hours: '주 6~8시간',
+      tasks: [
+        { round: 1, text: '본문 통째로 해석 + 구문 분석' },
+        { round: 1, text: '단어 1차 암기 (200개)' },
+        { round: 1, text: '단어 2차 암기 (200개)' },
+        { round: 1, text: '단어 3차 암기 (200개)' },
+        { round: 2, text: '본문 변형문제·빈칸 풀이' },
+        { round: 2, text: '부교재 모의고사 풀이' },
+        { round: 2, text: '구문집 정리' },
+        { round: 3, text: '본문 통암기 점검' },
+        { round: 3, text: '단어 최종 회독 (틀린 것만)' },
+      ]
+    },
+    {
+      id: 'math', name: '수학', tag: '주요', type: 'major',
+      scope: '공통수학1 · 인수분해 후반 ~ 방정식과 부등식 (유형 200~300제)',
+      hours: '주 10~12시간 (최우선)',
+      tasks: [
+        { round: 1, text: '개념서 1단원 정독 + 예제' },
+        { round: 1, text: '개념서 2단원 정독 + 예제' },
+        { round: 1, text: '기본 유형 문제 풀이 (1단원)' },
+        { round: 1, text: '기본 유형 문제 풀이 (2단원)' },
+        { round: 2, text: '심화 유형·기출 문제 (1단원)' },
+        { round: 2, text: '심화 유형·기출 문제 (2단원)' },
+        { round: 2, text: '오답노트 작성' },
+        { round: 3, text: '오답노트 재풀이' },
+        { round: 3, text: '시간 재고 모의테스트' },
+      ]
+    },
+    {
+      id: 'science', name: '통합과학', tag: '주요', type: 'major',
+      scope: '2~3개 중단원 (화학 변화 또는 생명 시스템 영역)',
+      hours: '주 4~5시간',
+      tasks: [
+        { round: 1, text: '교과서 본문 정독' },
+        { round: 1, text: '개념 노트 작성 (그림·도표 포함)' },
+        { round: 1, text: '기본 문제 풀이' },
+        { round: 2, text: '문제집 유형별 풀이' },
+        { round: 2, text: '실험·탐구 결과 정리' },
+        { round: 2, text: '오답 정리' },
+        { round: 3, text: '암기 항목 최종 점검' },
+        { round: 3, text: '핵심 요약 재독' },
+      ]
+    },
+    {
+      id: 'social', name: '통합사회', tag: '주요', type: 'major',
+      scope: '2~3개 중단원 (시장경제 또는 정의·불평등 영역)',
+      hours: '주 4~5시간',
+      tasks: [
+        { round: 1, text: '교과서 본문 정독' },
+        { round: 1, text: '개념·용어 정리' },
+        { round: 1, text: '자료해석 문제 풀이' },
+        { round: 2, text: '문제집 단원별 풀이' },
+        { round: 2, text: '사례·시사 연결 정리' },
+        { round: 2, text: '오답 정리' },
+        { round: 3, text: '키워드 암기 최종 점검' },
+        { round: 3, text: '서술형 대비 정리' },
+      ]
+    },
+    {
+      id: 'ai', name: '인공지능 기초', tag: '선택', type: 'minor',
+      scope: '1~2개 단원 (지도/비지도 학습, 데이터 처리)',
+      hours: '주 1.5~2시간',
+      tasks: [
+        { round: 1, text: '교과서 개념 정독' },
+        { round: 1, text: '용어 정리 (지도/비지도/강화학습 등)' },
+        { round: 2, text: '실습 예제 다시 보기' },
+        { round: 2, text: '문제 풀이' },
+        { round: 3, text: '핵심 요약 점검' },
+      ]
+    },
+    {
+      id: 'programming', name: '프로그래밍', tag: '선택', type: 'minor',
+      scope: '1~2개 단원 + 실습 (조건문·반복문·함수 또는 자료구조)',
+      hours: '주 2~2.5시간',
+      tasks: [
+        { round: 1, text: '개념 정리 (문법·구조)' },
+        { round: 1, text: '실습 코드 직접 작성' },
+        { round: 2, text: '예제 코드 변형 연습' },
+        { round: 2, text: '오류 원인 분석' },
+        { round: 3, text: '핵심 코드 패턴 외우기' },
+      ]
+    },
+    {
+      id: 'cs', name: '컴퓨터시스템 일반', tag: '선택', type: 'minor',
+      scope: '1~2개 단원 (CPU·메모리 구조 또는 운영체제 기초)',
+      hours: '주 1.5~2시간',
+      tasks: [
+        { round: 1, text: '교과서 본문 정독' },
+        { round: 1, text: '구조·용어 정리' },
+        { round: 2, text: '문제 풀이' },
+        { round: 2, text: '도식·그림 다시 그려보기' },
+        { round: 3, text: '암기 항목 최종 점검' },
+      ]
+    },
+  ];
+
+  const weeks = [
+    { num: 1, date: '5/17 ~ 5/23', goal: '1회독 시작 · 전과목 1단원 개념 정리', current: true,
+      tasks: [
+        '국어 1단원 정독 및 정리',
+        '영어 Lesson 1 본문 분석 + 단어 200개',
+        '수학 1단원 개념 + 기본문제',
+        '과학·사회 1단원 개념 정리',
+        '정보과목 단원 1회독',
+      ]
+    },
+    { num: 2, date: '5/24 ~ 5/30', goal: '1회독 진행 · 주요과목 2단원 진입',
+      tasks: [
+        '국어 2단원 정독 + 부교재 시작',
+        '영어 Lesson 2 + 단어 누적 400개',
+        '수학 2단원 개념 + 기본문제',
+        '과학·사회 2단원 개념',
+        '정보과목 실습 정리',
+      ]
+    },
+    { num: 3, date: '5/31 ~ 6/6', goal: '1회독 완료 · 약점 파악',
+      tasks: [
+        '국어 전 범위 1회독 완료',
+        '영어 전 범위 본문 분석 완료',
+        '수학 기본문제 완주',
+        '과학·사회 기본 문제 풀이',
+        '약점 단원 표시',
+      ]
+    },
+    { num: 4, date: '6/7 ~ 6/13', goal: '2회독 시작 · 유형 문제 집중',
+      tasks: [
+        '국어 부교재·기출 풀이',
+        '영어 변형문제·모의고사 풀이',
+        '수학 심화 유형 (1단원)',
+        '과학·사회 문제집 진행',
+        '오답노트 작성 시작',
+      ]
+    },
+    { num: 5, date: '6/14 ~ 6/20', goal: '2회독 완료 · 오답 누적',
+      tasks: [
+        '국어 부교재 마무리',
+        '영어 단어 1차 완성 (600개)',
+        '수학 심화 유형 (2단원) + 기출',
+        '과학·사회 문제집 마무리',
+        '정보과목 2회독',
+      ]
+    },
+    { num: 6, date: '6/21 ~ 6/29', goal: '3회독 · 마무리 · 컨디션 조절',
+      tasks: [
+        '오답노트만 회독',
+        '핵심 요약본 최종 회독',
+        '영어 단어 최종 점검',
+        '수학 모의테스트',
+        '수면·컨디션 관리',
+      ]
+    },
+  ];
+
+  // ===== STATE =====
+  let state = loadState();
+
+  function loadState() {
+    try {
+      const saved = localStorage.getItem('exam_tracker_v1');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem('exam_tracker_v1', JSON.stringify(state));
+      showSaved();
+    } catch (e) {
+      console.error('Save failed', e);
+    }
+  }
+
+  let saveTimeout;
+  function showSaved() {
+    const indicator = document.getElementById('saveIndicator');
+    indicator.classList.add('show');
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => indicator.classList.remove('show'), 1500);
+  }
+
+  function getChecked(key) {
+    return state[key] === true;
+  }
+
+  function setChecked(key, val) {
+    if (val) state[key] = true;
+    else delete state[key];
+    saveState();
+    updateAllProgress();
+  }
+
+  // ===== DDAY =====
+  function updateDday() {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const diff = Math.ceil((EXAM_DATE - now) / (1000 * 60 * 60 * 24));
+    const el = document.getElementById('dday');
+    if (diff > 0) el.textContent = `D-${diff}`;
+    else if (diff === 0) el.textContent = 'D-DAY';
+    else el.textContent = `D+${Math.abs(diff)}`;
+
+    // Phase highlight
+    const phase1End = new Date('2026-06-06');
+    const phase2End = new Date('2026-06-20');
+    document.getElementById('phase1').classList.remove('active');
+    document.getElementById('phase2').classList.remove('active');
+    document.getElementById('phase3').classList.remove('active');
+    if (now <= phase1End) document.getElementById('phase1').classList.add('active');
+    else if (now <= phase2End) document.getElementById('phase2').classList.add('active');
+    else document.getElementById('phase3').classList.add('active');
+  }
+
+  // ===== RENDER =====
+  function renderSubjects() {
+    const grid = document.getElementById('subjectsGrid');
+    grid.innerHTML = subjects.map(s => `
+      <div class="subject-card ${s.type}">
+        <div class="subject-card-header">
+          <div class="subject-name">${s.name}</div>
+          <div class="subject-tag ${s.type === 'minor' ? 'minor-tag' : ''}">${s.tag}</div>
+        </div>
+        <div class="subject-scope">${s.scope}</div>
+        <div class="subject-hours">⏱ ${s.hours}</div>
+        <ul class="check-list">
+          ${s.tasks.map((t, i) => {
+            const key = `sub_${s.id}_${i}`;
+            return `
+            <li>
+              <label class="check-item">
+                <input type="checkbox" data-key="${key}" ${getChecked(key) ? 'checked' : ''}>
+                <span class="round r${t.round}">${t.round}회</span>
+                <span class="label">${t.text}</span>
+              </label>
+            </li>`;
+          }).join('')}
+        </ul>
+      </div>
+    `).join('');
+  }
+
+  function renderWeeks() {
+    const grid = document.getElementById('weeksGrid');
+    // Calculate which week is current
+    const now = new Date();
+    const start = new Date('2026-05-17');
+    const weekIdx = Math.floor((now - start) / (7 * 24 * 60 * 60 * 1000));
+
+    grid.innerHTML = weeks.map((w, idx) => `
+      <div class="week-card ${idx === weekIdx ? 'current' : ''}">
+        <div class="week-header">
+          <div class="week-num">Week ${w.num}</div>
+          <div class="week-date">${w.date}</div>
+        </div>
+        <div class="week-goal">${w.goal}</div>
+        <ul class="check-list">
+          ${w.tasks.map((t, i) => {
+            const key = `week_${w.num}_${i}`;
+            return `
+            <li>
+              <label class="check-item">
+                <input type="checkbox" data-key="${key}" ${getChecked(key) ? 'checked' : ''}>
+                <span class="label">${t}</span>
+              </label>
+            </li>`;
+          }).join('')}
+        </ul>
+      </div>
+    `).join('');
+  }
+
+  // ===== PROGRESS =====
+  function updateAllProgress() {
+    let totalAll = 0, doneAll = 0;
+    const miniList = document.getElementById('subjectMiniList');
+    miniList.innerHTML = subjects.map(s => {
+      const total = s.tasks.length;
+      let done = 0;
+      s.tasks.forEach((t, i) => { if (getChecked(`sub_${s.id}_${i}`)) done++; });
+      totalAll += total;
+      doneAll += done;
+      const pct = total === 0 ? 0 : Math.round(done / total * 100);
+      return `
+        <div class="subject-mini">
+          <div class="name">${s.name}</div>
+          <div class="bar"><div class="bar-fill" style="width: ${pct}%"></div></div>
+          <div class="pct">${pct}%</div>
+        </div>
+      `;
+    }).join('');
+
+    // Add weekly totals to overall too
+    weeks.forEach(w => {
+      totalAll += w.tasks.length;
+      w.tasks.forEach((t, i) => { if (getChecked(`week_${w.num}_${i}`)) doneAll++; });
+    });
+
+    const pct = totalAll === 0 ? 0 : Math.round(doneAll / totalAll * 100);
+    document.getElementById('overallPercent').textContent = pct + '%';
+    document.getElementById('overallFraction').textContent = `${doneAll} / ${totalAll}`;
+    document.getElementById('overallFill').style.width = pct + '%';
+  }
+
+  // ===== EVENT BIND =====
+  function bindEvents() {
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', (e) => {
+        const key = e.target.dataset.key;
+        setChecked(key, e.target.checked);
+      });
+    });
+  }
+
+  // ===== ACTIONS =====
+  function resetAll() {
+    if (confirm('정말 모든 체크를 초기화할까요? 되돌릴 수 없습니다.')) {
+      state = {};
+      localStorage.removeItem('exam_tracker_v1');
+      renderAll();
+    }
+  }
+
+  function exportData() {
+    const totalChecked = Object.keys(state).length;
+    const dataStr = JSON.stringify({
+      exported_at: new Date().toISOString(),
+      total_checked: totalChecked,
+      state: state
+    }, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `exam_tracker_backup_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ===== INIT =====
+  function renderAll() {
+    renderSubjects();
+    renderWeeks();
+    bindEvents();
+    updateAllProgress();
+    updateDday();
+  }
+
+  renderAll();
+  // Refresh D-day every hour in case page stays open
+  setInterval(updateDday, 60 * 60 * 1000);
+</script>
+</body>
+</html>
