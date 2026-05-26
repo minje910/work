@@ -696,7 +696,7 @@
       <div class="title-block">
         <div class="eyebrow">High School 1st · Final Exam Tracker</div>
         <h1>고1 1학기 <span class="accent">기말고사</span> 작전</h1>
-        <p class="subtitle">최소 2회독 이상 · 6주 학습 플랜</p>
+        <p class="subtitle">최소 2회독 이상 · 5주 학습 플랜 (5/26 ~ 6/29)</p>
       </div>
       <div class="dday-block">
         <div class="dday-label">D-DAY</div>
@@ -720,15 +720,15 @@
       <div class="phases">
         <div class="phase" id="phase1">
           <span class="phase-num">1회독</span>
-          <span class="phase-label">5/17 ~ 6/6</span>
+          <span class="phase-label">6/8까지</span>
         </div>
         <div class="phase" id="phase2">
           <span class="phase-num">2회독</span>
-          <span class="phase-label">6/7 ~ 6/20</span>
+          <span class="phase-label">6/22까지</span>
         </div>
         <div class="phase" id="phase3">
           <span class="phase-num">3회독</span>
-          <span class="phase-label">6/21 ~ 6/29</span>
+          <span class="phase-label">6/29까지</span>
         </div>
       </div>
     </div>
@@ -754,7 +754,7 @@
     <div class="section-header">
       <h2>주차별 마일스톤</h2>
       <div class="line"></div>
-      <div class="badge">6 WEEKS</div>
+      <div class="badge">5 WEEKS</div>
     </div>
     <div class="weeks-grid" id="weeksGrid"></div>
   </section>
@@ -926,7 +926,7 @@
   ];
 
   const weeks = [
-    { num: 1, date: '5/17 ~ 5/23', goal: '1회독 시작 · 전과목 1단원 개념 정리', current: true,
+    { num: 1, date: '6/1까지', goal: '1회독 · 전과목 1단원 개념 정리',
       tasks: [
         '국어 1단원 정독 및 정리',
         '영어 Lesson 1 본문 분석 + 단어 200개',
@@ -935,25 +935,16 @@
         '정보과목 단원 1회독',
       ]
     },
-    { num: 2, date: '5/24 ~ 5/30', goal: '1회독 진행 · 주요과목 2단원 진입',
+    { num: 2, date: '6/8까지', goal: '1회독 완료 · 주요과목 2단원 + 약점 파악',
       tasks: [
-        '국어 2단원 정독 + 부교재 시작',
-        '영어 Lesson 2 + 단어 누적 400개',
-        '수학 2단원 개념 + 기본문제',
-        '과학·사회 2단원 개념',
-        '정보과목 실습 정리',
-      ]
-    },
-    { num: 3, date: '5/31 ~ 6/6', goal: '1회독 완료 · 약점 파악',
-      tasks: [
-        '국어 전 범위 1회독 완료',
-        '영어 전 범위 본문 분석 완료',
-        '수학 기본문제 완주',
-        '과학·사회 기본 문제 풀이',
+        '국어 전 범위 1회독 완료 + 부교재 시작',
+        '영어 Lesson 2~3 + 단어 누적 400개',
+        '수학 2단원 개념 + 기본문제 완주',
+        '과학·사회 2단원 개념 + 기본문제',
         '약점 단원 표시',
       ]
     },
-    { num: 4, date: '6/7 ~ 6/13', goal: '2회독 시작 · 유형 문제 집중',
+    { num: 3, date: '6/15까지', goal: '2회독 · 유형 문제 집중',
       tasks: [
         '국어 부교재·기출 풀이',
         '영어 변형문제·모의고사 풀이',
@@ -962,7 +953,7 @@
         '오답노트 작성 시작',
       ]
     },
-    { num: 5, date: '6/14 ~ 6/20', goal: '2회독 완료 · 오답 누적',
+    { num: 4, date: '6/22까지', goal: '2회독 완료 · 오답 누적',
       tasks: [
         '국어 부교재 마무리',
         '영어 단어 1차 완성 (600개)',
@@ -971,7 +962,7 @@
         '정보과목 2회독',
       ]
     },
-    { num: 6, date: '6/21 ~ 6/29', goal: '3회독 · 마무리 · 컨디션 조절',
+    { num: 5, date: '6/29까지', goal: '3회독 · 마무리 · 컨디션 조절',
       tasks: [
         '오답노트만 회독',
         '핵심 요약본 최종 회독',
@@ -1033,8 +1024,8 @@
     else el.textContent = `D+${Math.abs(diff)}`;
 
     // Phase highlight
-    const phase1End = new Date('2026-06-06');
-    const phase2End = new Date('2026-06-20');
+    const phase1End = new Date('2026-06-08');
+    const phase2End = new Date('2026-06-22');
     document.getElementById('phase1').classList.remove('active');
     document.getElementById('phase2').classList.remove('active');
     document.getElementById('phase3').classList.remove('active');
@@ -1075,7 +1066,7 @@
     const grid = document.getElementById('weeksGrid');
     // Calculate which week is current
     const now = new Date();
-    const start = new Date('2026-05-17');
+    const start = new Date('2026-05-26');
     const weekIdx = Math.floor((now - start) / (7 * 24 * 60 * 60 * 1000));
 
     grid.innerHTML = weeks.map((w, idx) => `
