@@ -1048,8 +1048,8 @@
   //
   //  (설정 전에도 앱은 정상 동작하며, 이 기기에만 저장됩니다.)
   const CLOUD = {
-    MASTER_KEY: '',   // ← jsonbin X-MASTER-KEY 붙여넣기
-    BIN_ID: '',       // ← 처음 한 번은 비워두면 자동 생성됩니다
+    MASTER_KEY: '$2a$10$gA23HpKg8T/KnCV1wYW42.Bcd1aPURkZFs05qMpz78L5G79unROLe',   // ← jsonbin X-MASTER-KEY 붙여넣기
+    BIN_ID: '6a26c37bf5f4af5e29cb884a',       // ← 공용 저장소 ID (설정 완료됨)
   };
   const API = 'https://api.jsonbin.io/v3/b';
   // ===================================================================
@@ -1109,7 +1109,7 @@
     const res = await fetch(API, {
       method: 'POST',
       headers: { ...cloudHeaders(), 'X-Bin-Name': 'exam_tracker_shared', 'X-Bin-Private': 'false' },
-      body: JSON.stringify(state),
+      body: JSON.stringify({ checks: state }),
     });
     if (!res.ok) throw new Error('create failed: ' + res.status);
     const data = await res.json();
@@ -1120,12 +1120,13 @@
     const res = await fetch(`${API}/${binId}/latest`, { headers: cloudHeaders() });
     if (!res.ok) throw new Error('pull failed: ' + res.status);
     const data = await res.json();
-    return data.record || {};
+    // jsonbin rejects a blank body, so state is wrapped as { checks: {...} }
+    return (data.record && data.record.checks) || {};
   }
 
   async function cloudPush() {
     const res = await fetch(`${API}/${binId}`, {
-      method: 'PUT', headers: cloudHeaders(), body: JSON.stringify(state),
+      method: 'PUT', headers: cloudHeaders(), body: JSON.stringify({ checks: state }),
     });
     if (!res.ok) throw new Error('push failed: ' + res.status);
   }
