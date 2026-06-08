@@ -660,6 +660,62 @@
     opacity: 1;
   }
 
+  .sync-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    align-self: center;
+    color: var(--ink-mute);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sync-status .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ink-mute);
+    flex-shrink: 0;
+  }
+
+  .sync-status.ok .dot { background: var(--done); }
+  .sync-status.ok { color: var(--done); }
+  .sync-status.syncing .dot { background: var(--accent-warm); animation: pulse 1s infinite; }
+  .sync-status.syncing { color: var(--accent-warm); }
+  .sync-status.offline .dot { background: var(--accent); }
+  .sync-status.offline { color: var(--accent); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Setup banner */
+  .sync-banner {
+    background: #fff8e8;
+    border: 2.5px solid var(--accent);
+    box-shadow: var(--shadow);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .sync-banner.setup { background: #fff8e8; border-color: var(--accent-warm); }
+  .sync-banner.error { background: #fdece7; border-color: var(--accent); }
+
+  .sync-banner strong { font-family: 'Gowun Batang', serif; }
+
+  .sync-banner code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--line-soft);
+    padding: 2px 6px;
+    user-select: all;
+    word-break: break-all;
+  }
+
   /* Footer text */
   footer {
     text-align: center;
@@ -689,6 +745,9 @@
 </head>
 <body>
 <div class="container">
+
+  <!-- ===== SYNC BANNER ===== -->
+  <div id="syncBanner" class="sync-banner" style="display:none"></div>
 
   <!-- ===== HEADER ===== -->
   <header>
@@ -792,6 +851,7 @@
 
   <!-- ===== ACTIONS ===== -->
   <div class="actions">
+    <span class="sync-status" id="syncStatus"><span class="dot"></span><span class="txt">연결 중…</span></span>
     <span class="save-indicator" id="saveIndicator">✓ 자동 저장됨</span>
     <button class="btn" onclick="exportData()">데이터 내보내기</button>
     <button class="btn btn-danger" onclick="resetAll()">전체 초기화</button>
@@ -799,7 +859,7 @@
 
   <footer>
     <p class="quote">"매일 한 페이지씩 쌓이면, 시험날엔 한 권이 된다."</p>
-    <p style="margin-top: 6px; font-size: 11px; font-family: 'JetBrains Mono', monospace;">데이터는 브라우저에 자동 저장됩니다 · localStorage</p>
+    <p style="margin-top: 6px; font-size: 11px; font-family: 'JetBrains Mono', monospace;">체크 상태는 공용 클라우드에 저장되어 모든 기기에서 동일하게 보입니다</p>
   </footer>
 
 </div>
@@ -973,10 +1033,35 @@
     },
   ];
 
-  // ===== STATE =====
-  let state = loadState();
+  // ===================================================================
+  // ===== ☁ 공용 클라우드 동기화 설정 (CLOUD SYNC CONFIG) =============
+  // ===================================================================
+  // 아래 두 값만 채우면, 어떤 기기·브라우저·계정으로 접속해도
+  // 모두 같은 체크 상태를 보고, 한 곳에서 체크하면 모두에게 반영됩니다.
+  //
+  //  [설정 방법 — 한 번만, 약 2분]
+  //  1) https://jsonbin.io 에 무료 가입(구글 로그인 가능)
+  //  2) 좌측 메뉴 'API KEYS' → X-MASTER-KEY 값을 복사해 아래 MASTER_KEY 에 붙여넣기
+  //  3) 이 파일을 저장하고 사이트를 한 번 열면, 화면 위에 자동으로 만들어진
+  //     BIN_ID 가 표시됩니다. 그 값을 복사해 아래 BIN_ID 에 붙여넣고 다시 배포하세요.
+  //  → 끝. 이후 모든 기기가 같은 데이터를 공유합니다.
+  //
+  //  (설정 전에도 앱은 정상 동작하며, 이 기기에만 저장됩니다.)
+  const CLOUD = {
+    MASTER_KEY: '',   // ← jsonbin X-MASTER-KEY 붙여넣기
+    BIN_ID: '',       // ← 처음 한 번은 비워두면 자동 생성됩니다
+  };
+  const API = 'https://api.jsonbin.io/v3/b';
+  // ===================================================================
 
-  function loadState() {
+  // ===== STATE =====
+  let state = loadLocal();
+  let binId = CLOUD.BIN_ID || '';
+  let pushTimer = null;
+  let pulling = false;
+  const cloudOn = () => !!CLOUD.MASTER_KEY;
+
+  function loadLocal() {
     try {
       const saved = localStorage.getItem('exam_tracker_v1');
       return saved ? JSON.parse(saved) : {};
@@ -985,12 +1070,11 @@
     }
   }
 
-  function saveState() {
+  function saveLocal() {
     try {
       localStorage.setItem('exam_tracker_v1', JSON.stringify(state));
-      showSaved();
     } catch (e) {
-      console.error('Save failed', e);
+      console.error('Local save failed', e);
     }
   }
 
@@ -1002,6 +1086,88 @@
     saveTimeout = setTimeout(() => indicator.classList.remove('show'), 1500);
   }
 
+  // ----- sync status UI -----
+  function setStatus(kind, text) {
+    const el = document.getElementById('syncStatus');
+    el.className = 'sync-status ' + kind;
+    el.querySelector('.txt').textContent = text;
+  }
+
+  function showBanner(html, cls) {
+    const b = document.getElementById('syncBanner');
+    b.className = 'sync-banner ' + (cls || '');
+    b.innerHTML = html;
+    b.style.display = 'block';
+  }
+
+  // ----- cloud calls -----
+  function cloudHeaders() {
+    return { 'Content-Type': 'application/json', 'X-Master-Key': CLOUD.MASTER_KEY };
+  }
+
+  async function cloudCreate() {
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: { ...cloudHeaders(), 'X-Bin-Name': 'exam_tracker_shared', 'X-Bin-Private': 'false' },
+      body: JSON.stringify(state),
+    });
+    if (!res.ok) throw new Error('create failed: ' + res.status);
+    const data = await res.json();
+    return data.metadata.id;
+  }
+
+  async function cloudPull() {
+    const res = await fetch(`${API}/${binId}/latest`, { headers: cloudHeaders() });
+    if (!res.ok) throw new Error('pull failed: ' + res.status);
+    const data = await res.json();
+    return data.record || {};
+  }
+
+  async function cloudPush() {
+    const res = await fetch(`${API}/${binId}`, {
+      method: 'PUT', headers: cloudHeaders(), body: JSON.stringify(state),
+    });
+    if (!res.ok) throw new Error('push failed: ' + res.status);
+  }
+
+  // Debounced push so rapid clicks make one network call
+  function scheduleSync() {
+    saveLocal();
+    showSaved();
+    if (!cloudOn() || !binId) return;
+    setStatus('syncing', '동기화 중…');
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(async () => {
+      try {
+        await cloudPush();
+        setStatus('ok', '동기화됨 · 모든 기기 공유');
+      } catch (e) {
+        console.error(e);
+        setStatus('offline', '오프라인 (이 기기에 저장됨)');
+      }
+    }, 500);
+  }
+
+  // Pull latest from cloud and re-render if changed
+  async function pullAndRender() {
+    if (!cloudOn() || !binId || pulling) return;
+    pulling = true;
+    try {
+      const remote = await cloudPull();
+      if (JSON.stringify(remote) !== JSON.stringify(state)) {
+        state = remote;
+        saveLocal();
+        renderAll();
+      }
+      setStatus('ok', '동기화됨 · 모든 기기 공유');
+    } catch (e) {
+      console.error(e);
+      setStatus('offline', '오프라인 (이 기기에 저장됨)');
+    } finally {
+      pulling = false;
+    }
+  }
+
   function getChecked(key) {
     return state[key] === true;
   }
@@ -1009,8 +1175,8 @@
   function setChecked(key, val) {
     if (val) state[key] = true;
     else delete state[key];
-    saveState();
     updateAllProgress();
+    scheduleSync();
   }
 
   // ===== DDAY =====
@@ -1136,10 +1302,14 @@
 
   // ===== ACTIONS =====
   function resetAll() {
-    if (confirm('정말 모든 체크를 초기화할까요? 되돌릴 수 없습니다.')) {
+    const msg = cloudOn() && binId
+      ? '정말 모든 체크를 초기화할까요? 모든 기기에서 함께 초기화되며 되돌릴 수 없습니다.'
+      : '정말 모든 체크를 초기화할까요? 되돌릴 수 없습니다.';
+    if (confirm(msg)) {
       state = {};
       localStorage.removeItem('exam_tracker_v1');
       renderAll();
+      scheduleSync();
     }
   }
 
@@ -1168,7 +1338,51 @@
     updateDday();
   }
 
+  // ===== CLOUD BOOTSTRAP =====
+  async function initCloud() {
+    // Not configured → local-only mode
+    if (!cloudOn()) {
+      setStatus('offline', '이 기기에만 저장됨');
+      showBanner(
+        '⚙ <strong>공용 동기화가 아직 설정되지 않았어요.</strong> 지금은 체크 상태가 <b>이 기기에만</b> 저장됩니다. ' +
+        '모든 기기에서 똑같이 보이게 하려면 코드 상단 <code>CLOUD</code> 설정의 안내(약 2분)를 따라주세요.',
+        'setup'
+      );
+      return;
+    }
+
+    setStatus('syncing', '연결 중…');
+
+    // First run: no bin yet → create one and ask user to hardcode the id
+    if (!binId) {
+      try {
+        binId = await cloudCreate();
+        showBanner(
+          '✅ <strong>공용 저장소가 생성됐습니다!</strong> 아래 BIN_ID를 복사해 코드 상단 ' +
+          '<code>CLOUD.BIN_ID</code> 에 붙여넣고 다시 배포하세요. 그래야 모든 기기가 같은 데이터를 공유합니다.<br><br>' +
+          'BIN_ID: <code>' + binId + '</code>',
+          'setup'
+        );
+        setStatus('ok', '동기화됨 (BIN_ID 설정 필요)');
+      } catch (e) {
+        console.error(e);
+        setStatus('offline', '연결 실패 (이 기기에 저장됨)');
+        showBanner('⚠ <strong>클라우드 연결에 실패했습니다.</strong> MASTER_KEY를 확인해주세요. 지금은 이 기기에만 저장됩니다.', 'error');
+      }
+      return;
+    }
+
+    // Normal run: pull shared state, then poll for others' changes
+    await pullAndRender();
+    setInterval(pullAndRender, 8000);
+    // Pull immediately when the tab regains focus
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) pullAndRender();
+    });
+  }
+
   renderAll();
+  initCloud();
   // Refresh D-day every hour in case page stays open
   setInterval(updateDday, 60 * 60 * 1000);
 </script>
